@@ -10,3 +10,4 @@ then do
     cd elasticsearch   
     python manage.py runserver 0.0.0.0:8000
 
+Then open http://localhost:8000 in your browser
