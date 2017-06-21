@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - SkyBits Technologies</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'crawler/styles/bootstrap.css' %}" />
+
+</head>
+
+<body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>                        
+          </button>
+          <a class="navbar-brand" href="#">XEngine</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#">Page 1</a></li>
+            <li><a href="#">Page 2</a></li>
+            <li><a href="#">Page 3</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+            <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container " style="margin-top:30px">
+    {% block content %}{% endblock %}
+        <hr/>
+        <footer class="navbar-fixed-bottom">
+            <p>&copy; {{ year }} - Xengine</p>
+        </footer>
+    </div>
+
+    <script src="{% static 'crawler/scripts/jquery-1.10.2.js' %}"></script>
+    <script src="{% static 'crawler/scripts/bootstrap.js' %}"></script>
+{% block scripts %}{% endblock %}
+
+</body>
+</html>
