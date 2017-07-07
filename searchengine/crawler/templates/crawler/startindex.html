@@ -4,7 +4,7 @@
 {% load staticfiles %}
 <div class="jumbotron" style="text-align: center">
     <h1>Crawler Integration</h1>
-	
+
 	<p >This is a demo to integrate the crawler into the Django Application. You can check the progress in the Django terminal. The crawled links will be printed as well as the Database will be populated.</p>
 	<img src='{% static "crawler/media/loader.webp" %}' style="margin-top: 20px"/>
 
@@ -13,11 +13,11 @@
 		xhr.onreadystatechange= function(){
 			if(xhr.readyState = XMLHttpRequest.DONE && xhr.status == 200)
 			{
-				console.log(xhr.responseText);				
+				console.log(xhr.responseText);
 			}
 			else if(xhr.readyState = XMLHttpRequest.DONE && xhr.status == 500)
 			{
-				document.write('<div style="margin-top:100px; padding : 30px; text-align:center;"><h2>The video uploaded couldnot be uploaded due no internet connectivity. Retry again by reloading the page</h2></div>');		
+				document.write('<div style="margin-top:100px; padding : 30px; text-align:center;"><h2>The video uploaded couldnot be uploaded due no internet connectivity. Retry again by reloading the page</h2></div>');
 			}
 		};
 		xhr.upload.onerror = function(error) {
@@ -27,10 +27,10 @@
 		xhr.open('GET',link);
 		xhr.send(null);
 	</script>
-	
+
 
 </div>
 
- 
+
 
 {% endblock %}

@@ -1,0 +1,25 @@
+{% extends "crawler/layout.html" %}
+{% block content %}
+{% load staticfiles %}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+			<img src='{% static "crawler/media/cortexlogiclogo.jpg" %}' style="margin-top: 20px"/>
+        </div>
+        <div class="col-md-6 col-md-offset-3">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
