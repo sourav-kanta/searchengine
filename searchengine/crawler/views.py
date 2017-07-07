@@ -2,14 +2,19 @@
 from __future__ import unicode_literals
 
 from datetime import datetime
-from django.shortcuts import render
-
+from django.shortcuts import render,render_to_response
+from django.template import loader,Context,RequestContext
+from django.contrib.auth.models import User
 from pymongo import MongoClient
 import requests
 import urllib2
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseRedirect
+from django.contrib.auth import logout
+from crawler.models import RegistrationForm
+
 
 def crawldata():
 	url = "http://stackoverflow.com"
@@ -73,3 +78,39 @@ def start(request):
             'year': datetime.now().year,
         }
     )
+
+def signup(request):
+	if request.method == 'POST':
+	    form = RegistrationForm(request.POST)
+	    if form.is_valid():
+	        user = User.objects.create_user(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],email=form.cleaned_data['email'])
+	        return HttpResponseRedirect('/login')
+	form = RegistrationForm()
+	variables = RequestContext(request, {'form': form,
+	        'title':'Demo Content',
+	        'year': datetime.now().year,
+	    })
+	return render_to_response('crawler/signup.html',variables)
+
+def login(request):
+	return render(
+        request,
+        'crawler/login.html',
+        {
+            'title':'Demo Content',
+            'year': datetime.now().year,
+        }
+    )
+
+def home(request):
+	template = loader.get_template('crawler/home.html')
+	variables = Context({ 'user': request.user ,
+            'title':'Demo Content',
+            'year': datetime.now().year,
+        })
+	output = template.render(variables)
+	return HttpResponse(output)
+
+def logout_page(request):
+    logout(request)
+    return HttpResponseRedirect('/login')
