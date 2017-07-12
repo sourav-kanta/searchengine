@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from pymongo import MongoClient
 import requests
 import urllib2
-import time
+import time,json
 import re
 import threading
 from bs4 import BeautifulSoup
@@ -17,12 +17,15 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect
 from django.contrib.auth import logout
 from crawler.models import RegistrationForm
-
+from elasticsearch import Elasticsearch
+from parser1 import parse
 url_pool = [("https://en.wikipedia.org/wiki/Main_Page",5),("http://www.michigan.gov",3),("https://www.nrcan.gc.ca/",3),("http://dnr.maryland.gov/",3),("https://resourcegovernance.org/",3),("https://naturalresources.virginia.gov/",3),("https://naturalresources.wales/?lang=en",3)]
-
 client = MongoClient()
+es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
 db = client.test
+collection = db.docs
 class AllThreads(threading.Thread):
+	
 	print('crawl')
 	def __init__(self,url,period):
 		period = period
@@ -30,7 +33,7 @@ class AllThreads(threading.Thread):
 		threading.Thread.__init__(self)
 		self.url = url
 	def crawl(self,url_pool,period):
-		print('crawl')
+		#print('crawl')
 		#print(self.url)
 		if(urllib2.urlopen(self.url)):
 			page = urllib2.urlopen(self.url)
@@ -45,41 +48,76 @@ class AllThreads(threading.Thread):
 							url_pool.append((self.url + str(new_link),1))
 							id = datetime.now()
 							try:
-								#data = urllib2.urlopen(self.url + str(new_link))
-								data = "test"
+								data = parse(self.url + str(new_link))
 							except:
 								#print "error"
+								data = parse(self.url + str(new_link))
 								data = "Nothing Found"
-							db.docs.insert_one({"id": id,"link":self.url + str(new_link)})
-						except :
-							print("error while encoding1")
+							db.docs.insert_one({"id": id,"data":data,"link":self.url + str(new_link)})
+							dict1 = {"link":self.url + str(new_link),"data":data}
+							data = json.dumps(dict1, ensure_ascii=False)
+							es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
+							#with open("doc.json", "w") as f:
+    								#json.dump(list(collection.find()), f)
+						except urllib2.HTTPError as e:
+
+							'''
+							url_pool.append((self.url + str(new_link),1))
+							print(self.url + str(new_link))
+							id = datetime.now()
+							try:
+								data = parse(self.url + str(new_link))
+							except:
+								#print "error"
+								data = parse(self.url + str(new_link))
+								data = "Nothing Found"
+						
+							print("error while encoding1")	
+							db.docs.insert_one({"id": id,"data":data,"link":self.url + str(new_link)})
+							dict1 = {"link":self.url + str(new_link),"data":data}
+							data = json.dumps(dict1, ensure_ascii=False)
+							es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
+							#with open("doc.json", "w") as f:
+    								#json.dump(list(collection.find()), f)
+    						'''
+    					
+    							error_message = e.read()
+    							print "error part1",error_message
+
 					else:
 						try:
 							url_pool.append((new_link,1))
 							id = datetime.now()
 							try:
 								#data = urllib2.urlopen(new_link)
-								data = "test"
+								data = parse(str(new_link))
 							except:
 								#print "error"
 								data = "Nothing Found"
-							db.docs.insert_one({"id": id,"link":str(new_link)})
-						except :
-							print("error while encoding2")
+							db.docs.insert_one({"id": id,"data":data,"link":str(new_link)})
+							dict1 = {"link":str(new_link),"data":data}
+							data = json.dumps(dict1, ensure_ascii=False)
+							es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
+							#with open("doc.json", "w") as f:
+    								#json.dump(list(db.docs.find()), f)
+						except urllib2.HTTPError as e:
+							error_message = e.read()
+    							print "error part2",error_message
+			#with open("doc.json", "w") as f:
+    				#json.dump(list(docs.find()), f)
 			print(url_pool)	 
 		 	#print(db.docs)
 		 	time.sleep(period)
 		 	self.crawl(url_pool,period)
 
-def get_the_links(url_pool):
 
-	print "Getting the links"
+def get_the_links(url_pool):
 	k = 0
 	for i in url_pool:
 		if i[0] is not None:
 			background = AllThreads(i[0],i[1])
 			background.start()
-			print(i)
+			#print(i)
 			background.crawl(url_pool,i[1])
 			background.join()
 			#print(url_pool)
@@ -90,7 +128,6 @@ def get_the_links(url_pool):
 		else:
 			break
 	return url_pool
-
 def crawldata():
 	global url_pool
 	print "Crawling"
@@ -149,6 +186,9 @@ def crawldata2():
 def crawl_page(request):
 	#crawldata()
 	global url_pool
+	for index in es.indices.get('*'):
+  		print index
+	#print(es.search(index='sw'))
 	url_pool = get_the_links(url_pool)
 	return HttpResponse("Exhausted links.")
 
