@@ -57,6 +57,8 @@ def parse(url):
 			fin_list.append(word)
 	text = " ".join(fin_list)
 	return text
+
+
 '''
 
 tf = []

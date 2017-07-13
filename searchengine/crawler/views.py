@@ -189,13 +189,15 @@ def signup(request):
 	        user = User.objects.create_user(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],email=form.cleaned_data['email'])
 	        return HttpResponseRedirect('/login')
 	    else:
-	    	variables = RequestContext(request, {'form': form,
+	    	variables = RequestContext(request, {
+				'form': form,
 				'title':'Demo Content',
 				'year': datetime.now().year,
 	    	})
 	    	return render_to_response('crawler/signup.html',variables)
 	form = RegistrationForm()
-	variables = RequestContext(request, {'form': form,
+	variables = RequestContext(request, {
+		    'form': form,
 	        'title':'Demo Content',
 	        'year': datetime.now().year,
 	    })
