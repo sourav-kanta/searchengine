@@ -60,26 +60,6 @@ class AllThreads(threading.Thread):
 							#with open("doc.json", "w") as f:
     								#json.dump(list(collection.find()), f)
 						except urllib2.HTTPError as e:
-
-							'''
-							url_pool.append((self.url + str(new_link),1))
-							print(self.url + str(new_link))
-							id = datetime.now()
-							try:
-								data = parse(self.url + str(new_link))
-							except:
-								#print "error"
-								data = parse(self.url + str(new_link))
-								data = "Nothing Found"
-						
-							print("error while encoding1")	
-							db.docs.insert_one({"id": id,"data":data,"link":self.url + str(new_link)})
-							dict1 = {"link":self.url + str(new_link),"data":data}
-							data = json.dumps(dict1, ensure_ascii=False)
-							es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
-							#with open("doc.json", "w") as f:
-    								#json.dump(list(collection.find()), f)
-    						'''
     					
     							error_message = e.read()
     							print "error part1",error_message
@@ -208,6 +188,12 @@ def signup(request):
 	    if form.is_valid():
 	        user = User.objects.create_user(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],email=form.cleaned_data['email'])
 	        return HttpResponseRedirect('/login')
+	    else:
+	    	variables = RequestContext(request, {'form': form,
+				'title':'Demo Content',
+				'year': datetime.now().year,
+	    	})
+	    	return render_to_response('crawler/signup.html',variables)
 	form = RegistrationForm()
 	variables = RequestContext(request, {'form': form,
 	        'title':'Demo Content',
