@@ -9,9 +9,15 @@ from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 from collections import Counter 
 def parse(url):
-	headers = { 'User-Agent' : 'Mozilla/5.0' }
-	req = urllib2.Request(url, None, headers)		
-	data = urllib2.urlopen(req).read()
+	myheaders = { 'User-Agent' : 'Mozilla/5.0' }
+	req = urllib2.Request(url, headers=myheaders)
+	print "Loading "	+  url
+	try:	
+		data = urllib2.urlopen(req).read()
+		#data = urllib2.urlopen(url)
+	except Exception,e:
+		print "Error here"+str(e)
+		return "None"
 
 	data = BeautifulSoup(data)
 	#print(data)
@@ -29,6 +35,7 @@ def parse(url):
 	data = re.sub('(\\n*\\t*)*', '', str(data))
 	data = str(data).replace("\t","")
 	data = data.replace("\n","")
+	print data
 	f = open("parser1.txt","w")
 	f.write(data)
 	f.close()
@@ -57,6 +64,8 @@ def parse(url):
 			fin_list.append(word)
 	text = " ".join(fin_list)
 	return text
+
+
 '''
 
 tf = []
