@@ -19,6 +19,9 @@ from django.contrib.auth import logout
 from crawler.models import RegistrationForm
 from elasticsearch import Elasticsearch
 from parser1 import parse
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 url_pool = [("http://www.michigan.gov",3),("https://www.nrcan.gc.ca/",3),("http://dnr.maryland.gov/",3),("https://resourcegovernance.org/",3),("https://naturalresources.virginia.gov/",3),("https://naturalresources.wales/?lang=en",3)]
 client = MongoClient()
 es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
@@ -43,6 +46,7 @@ class AllThreads(threading.Thread):
 						try:
 							url_pool.append((self.url + str(new_link),1))
 							id = datetime.now()
+							ok=True
 							try:
 								data = parse(self.url + str(new_link))
 								print "Success"
@@ -51,10 +55,13 @@ class AllThreads(threading.Thread):
 								print "Error"
 								data = parse(self.url + str(new_link))
 								data = "Nothing Found"
+								ok=False
 							#db.docs.insert_one({"id": id,"data":data,"link":self.url + str(new_link)})
 							dict1 = {"link":self.url + str(new_link),"data":data}
 							data = json.dumps(dict1, ensure_ascii=False)
-							es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
+							if ok:
+								print "Inserting"
+								es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
 							#with open("doc.json", "w") as f:
     								#json.dump(list(collection.find()), f)
 						except urllib2.HTTPError as e:
@@ -65,6 +72,7 @@ class AllThreads(threading.Thread):
 						try:
 							url_pool.append((new_link,1))
 							id = datetime.now()
+							ok=True
 							try:
 								data = parse(str(new_link))
 								print "Success 2"
@@ -72,9 +80,12 @@ class AllThreads(threading.Thread):
 							except:
 								print "Error2s"
 								data = "Nothing Found"
+								ok=False
 							dict1 = {"link":str(new_link),"data":data}
 							data = json.dumps(dict1, ensure_ascii=False)
-							es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
+							if ok:
+								print "Inserting"
+								es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
 						except urllib2.HTTPError as e:
 							error_message = e.read()
     						#print "error part2",error_message
