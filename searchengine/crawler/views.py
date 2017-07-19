@@ -165,7 +165,15 @@ def home(request):
 		for rows in result['hits']['hits']:
 			f_res={}
 			f_res["link"]=rows["_source"]["link"]
-			f_res["data"]=rows["_source"]["data"][:500]+"..."
+			if len(rows["_source"]["data"]) >= 500:
+				f_res["data"]=rows["_source"]["data"][:500]+"..."
+			else:
+				f_res["data"]=rows["_source"]["data"]
+			res.append(f_res)
+		if len(res)==0:
+			f_res={}
+			f_res["link"]=""
+			f_res["data"]="No results were found for "+request.GET.get('query')+""
 			res.append(f_res)
 		template = loader.get_template('crawler/search.html')
 		variables = Context({ 'user': request.user ,

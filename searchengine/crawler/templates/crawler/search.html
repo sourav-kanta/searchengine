@@ -1,13 +1,12 @@
-{% extends "crawler/layout.html" %}
+{% extends "crawler/user_layout.html" %}
 {% block content %}
 {% load staticfiles %}
 
-{% if user.username %}
-    <p>Welcome {{ user.username }} <a href="logout">Logout</a></p>
+{% if user.is_authenticated and user.username %}
     <div class="container">
         <div class="row">
-            <div class="col-md-6 col-md-offset-3" style="text-align: center">
-                <img src='{% static "crawler/media/cortexlogiclogo.jpg" %}' style="margin-top: 20px"/>
+            <div class="col-md-6 col-md-offset-3 container" style="text-align: center">
+                <img src='{% static "crawler/media/cortexlogiclogo.jpg" %}' style="margin-top: 20px; height:auto width=90% max-width=400px"/>
             </div>
             <form class="col-md-6 col-md-offset-3" method=get>
                 <div class="input-group">
@@ -19,17 +18,18 @@
                     </span>
                 </div>
             </div>
+            <table class="table-hover" style="margin-top: 30px">
+                {% for row in results %}
+                <tr >
+                    <td>
+                        <b><a href="{{row.link}}">{{row.link}}</a></b>
+                        <p>{{row.data}}</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
         </div>
-    <table style="margin-top: 30px">
-        {% for row in results %}
-        <tr class="">
-            <td>
-                <b><a href="{{row.link}}">{{row.link}}</a></b>
-                <p>{{row.data}}</p>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+    
 
     
 {% else %}
