@@ -1,13 +1,14 @@
 {% extends "crawler/layout.html" %}
 
+
 {% block content %}
 {% load staticfiles %}
-<div class="jumbotron" style="text-align: center">
-    <h1>Cortex Logic</h1>
+<div class="jumbotron content" style="text-align: center">
+    <img id="logo" src='{% static "crawler/media/cortexlogiclogo.jpg" %}' style="margin-top: 20px"/>
     <br/>
-	<form method="post" action=".">
+	<form method="post" action="." id="signupForm">
 		{{ form.as_p }}
-		<input type="submit" class="btn-success btn-lg" value="Register" />
+		<input type="submit" class="btn-success btn-lg submitButton" value="Register" />
 		{% csrf_token %}
 	</form>
 		

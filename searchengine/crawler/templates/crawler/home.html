@@ -1,20 +1,31 @@
-{% extends "crawler/layout.html" %}
-
+{% extends "crawler/user_layout.html" %}
 {% block content %}
 {% load staticfiles %}
-<div class="jumbotron" style="text-align: center">
-    <h1>Cortex Logic</h1>
-	{% if user.username %}
-		<p>Welcome {{ user.username }}!
-			Here you can show your content!</p><br/>
-		<a href="logout">logout</a>
-	{% else %}
-		<p>Welcome anonymous user!
-			You need to <a href="/login/">login</a></p>
-	{% endif %}
 
-</div>
+{% if user.is_authenticated and user.username %}
 
- 
+        <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3" style="text-align: center">
+                <img src='{% static "crawler/media/cortexlogiclogo.jpg" %}' style="margin-top: 20px"/>
+            </div>
+            <form class="col-md-6 col-md-offset-3" method=get>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="query" placeholder="" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+        <p>Welcome anonymous user!
+            You need to <a href="/login/">login</a></p>
+    {% endif %}
+
 
 {% endblock %}
+

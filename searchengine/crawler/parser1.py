@@ -14,6 +14,29 @@ def parse(url):
 	data = urllib2.urlopen(req).read()
 
 	data = BeautifulSoup(data)
+	body = data.body
+	all_texts = body.find_all("p")
+	#print(all_texts[1])
+	#all_texts = all_texts[0]
+	#print(all_texts)
+	#print(len(all_texts))
+	text1 = ""
+	for i in range(len(all_texts)):
+		#print(all_texts[i])
+		all_links = all_texts[i].find_all("a")
+		
+		for links in all_links:
+		  	cleanr = re.compile('<.*?>')
+  		  	all_texts[i] = re.sub(cleanr, '', str(all_texts[i]))
+  		  	cleanr = re.compile('<script>.*?</script>')
+  		  	all_texts[i] = re.sub(cleanr, '', str(all_texts[i]))
+		#print(all_texts[i])
+		text1 = text1 + str(all_texts[i])
+	cleanr = re.compile('<.*?>')
+	text1 = re.sub(cleanr, '', str(text1))
+	#print
+	#print(text)
+
 	#print(data)
 	#print(data.title.string)
 	#print(data.h1.string)
@@ -56,9 +79,7 @@ def parse(url):
 		if word not in stop_words:
 			fin_list.append(word)
 	text = " ".join(fin_list)
-	return text
-
-
+	return text1
 '''
 
 tf = []

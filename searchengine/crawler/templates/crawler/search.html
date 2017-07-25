@@ -1,0 +1,42 @@
+{% extends "crawler/user_layout.html" %}
+{% block content %}
+{% load staticfiles %}
+
+{% if user.is_authenticated and user.username %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3 container" style="text-align: center">
+                <img src='{% static "crawler/media/cortexlogiclogo.jpg" %}' style="margin-top: 20px; height:auto width=90% max-width=400px"/>
+            </div>
+            <form class="col-md-6 col-md-offset-3" method=get>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="query" placeholder="" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <table class="table-hover" style="margin-top: 30px">
+                {% for row in results %}
+                <tr >
+                    <td>
+                        <b style="font-family: Verdana,sans-serif"><a href="{{row.link}}">{{row.link}}</a></b>
+                        <p style="font-family: sans-serif">{{row.data}}</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    
+
+    
+{% else %}
+    <p>Welcome anonymous user!
+        You need to <a href="/login/">login</a></p>
+{% endif %}
+
+
+{% endblock %}
+

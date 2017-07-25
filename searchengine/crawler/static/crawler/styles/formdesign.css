@@ -1,0 +1,30 @@
+label{
+	width:150px;
+	text-align:left;
+}
+
+.content{
+	background: white;
+}
+
+#logo{
+	width:50%;
+	margin: 20px;
+}
+
+.submitButton{
+	border: none;
+    box-shadow: 4px 4px 10px grey;
+    width: 120px;
+}
+
+#signupForm{
+	border: 1px solid grey;
+    width: 500px;
+    padding: 20px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 5px 5px 20px grey;
+}
+
+@media screen and (max-width: )
