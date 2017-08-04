@@ -49,7 +49,7 @@ class AllThreads(threading.Thread):
 					if(re.findall('^/',str(new_link))):
 						try:
 							url_pool.append((self.url + str(new_link),1))
-							id = datetime.now()
+							id = self.url + str(new_link)
 							try:
 								data,header = parse(self.url + str(new_link))
 								dict1 = {"link":self.url + str(new_link),"data":data,"header":header}
@@ -70,7 +70,7 @@ class AllThreads(threading.Thread):
 					else:
 						try:
 							url_pool.append((new_link,1))
-							id = datetime.now()
+							id = new_link
 							try:
 								#data = urllib2.urlopen(new_link)
 								data,header = parse(str(new_link))
