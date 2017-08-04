@@ -32,66 +32,65 @@ class AllThreads(threading.Thread):
 	print('crawl')
 	def __init__(self,url,period):
 		period = period
+		#print('crawl')
 		threading.Thread.__init__(self)
 		self.url = url
 	def crawl(self,url_pool,period):
+		#print('crawl')
+		#print(self.url)
 		if(urllib2.urlopen(self.url)):
 			page = urllib2.urlopen(self.url)
 			soup = BeautifulSoup(page)
 			all_links = soup.find_all("a") 
 			for link in all_links:
+				#print(link)
 				new_link = link.get("href")
 				if new_link not in url_pool:
 					if(re.findall('^/',str(new_link))):
 						try:
 							url_pool.append((self.url + str(new_link),1))
 							id = datetime.now()
-							ok=True
 							try:
-								data = parse(self.url + str(new_link))
-								print "Success"
-								#sleep(1000)
+								data,header = parse(self.url + str(new_link))
+								dict1 = {"link":self.url + str(new_link),"data":data,"header":header}
+								data = json.dumps(dict1, ensure_ascii=False)
+								if not header=="none":
+									es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
 							except:
-								print "Error"
+								#print "error"
 								data = parse(self.url + str(new_link))
 								data = "Nothing Found"
-								ok=False
-							#db.docs.insert_one({"id": id,"data":data,"link":self.url + str(new_link)})
-							dict1 = {"link":self.url + str(new_link),"data":data}
-							data = json.dumps(dict1, ensure_ascii=False)
-							if ok:
-								print "Inserting"
-								es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
-							#with open("doc.json", "w") as f:
-    								#json.dump(list(collection.find()), f)
+						
 						except urllib2.HTTPError as e:
+
+							
     							error_message = e.read()
-    							#print "error part1",error_message
+    							print "error part1",error_message
 
 					else:
 						try:
 							url_pool.append((new_link,1))
 							id = datetime.now()
-							ok=True
 							try:
-								data = parse(str(new_link))
-								print "Success 2"
-								#sleep(1000)
+								#data = urllib2.urlopen(new_link)
+								data,header = parse(str(new_link))
+								dict1 = {"link":str(new_link),"data":data,"header":header}
+								data = json.dumps(dict1, ensure_ascii=False)
+								if not header=="none":
+									es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
 							except:
-								print "Error2s"
+								#print "error"
 								data = "Nothing Found"
-								ok=False
-							dict1 = {"link":str(new_link),"data":data}
-							data = json.dumps(dict1, ensure_ascii=False)
-							if ok:
-								print "Inserting"
-								es.index(index='sw', doc_type='people', id=id,body=json.loads(data))
+							
 						except urllib2.HTTPError as e:
 							error_message = e.read()
-    						#print "error part2",error_message
+    							print "error part2",error_message
+			#with open("doc.json", "w") as f:
+    				#json.dump(list(docs.find()), f)
+			print(url_pool)	 
+		 	#print(db.docs)
 		 	time.sleep(period)
 		 	self.crawl(url_pool,period)
-
 
 def get_the_links(url_pool):
 	k = 0
@@ -99,12 +98,18 @@ def get_the_links(url_pool):
 		if i[0] is not None:
 			background = AllThreads(i[0],i[1])
 			background.start()
+			#print(i)
 			background.crawl(url_pool,i[1])
 			background.join()
+			#print(url_pool)
+			#print(len(url_pool))
+			#print(i)
+			#print k
 			k = k + 1
 		else:
 			break
 	return url_pool
+
 def crawldata():
 	global url_pool
 	print "Crawling"
@@ -180,11 +185,13 @@ def home(request):
 				f_res["data"]=rows["_source"]["data"][:500]+"..."
 			else:
 				f_res["data"]=rows["_source"]["data"]
+			f_res["header"]=rows["_source"]["header"]
 			res.append(f_res)
 		if len(res)==0:
 			f_res={}
 			f_res["link"]=""
 			f_res["data"]="No results were found for "+request.GET.get('query')+""
+			f_res["header"]=""
 			res.append(f_res)
 		template = loader.get_template('crawler/search.html')
 		variables = Context({ 'user': request.user ,

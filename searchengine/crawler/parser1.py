@@ -14,6 +14,13 @@ def parse(url):
 	data = urllib2.urlopen(req).read()
 
 	data = BeautifulSoup(data)
+	print "hi"
+	header = data.title.string
+	'''try:
+		header = data.findall("title")
+	except:
+		return "","none"
+	'''
 	body = data.body
 	all_texts = body.find_all("p")
 	#print(all_texts[1])
@@ -79,45 +86,4 @@ def parse(url):
 		if word not in stop_words:
 			fin_list.append(word)
 	text = " ".join(fin_list)
-	return text1
-'''
-
-tf = []
-
-
-tf = Counter(fin_list)
-
-total = 0
-
-print(tf)
-
-for key,value in tf.iteritems():
-	total = total + value
-	
-print(total)
-
-
-for key,value in tf.iteritems():
-	tf[key] = value/float(total)
-	
-print(tf)
-
-total = 0
-
-text = " ".join(fin_list)
-
-texts=Counter(text.split())
-
-vocab_inv = {x[0] for x in texts.most_common()}
-vocab = {x: i for i,x in enumerate(vocab_inv)}
-#print(vocab)
-for key,value in vocab.iteritems():
-	total = total + value
-	
-print(total)
-
-datas = nltk.pos_tag(fin_list)
-datas =  nltk.ne_chunk(datas, binary=True)
-
-#print(datas)
-'''
+	return text1,header
